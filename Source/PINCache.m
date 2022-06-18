@@ -60,6 +60,21 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
                   keyDecoder:(PINDiskCacheKeyDecoderBlock)keyDecoder
                     ttlCache:(BOOL)ttlCache
 {
+    return [self initWithName:name rootPath:rootPath serializer:serializer deserializer:deserializer keyEncoder:keyEncoder keyDecoder:keyDecoder ttlCache:NO
+                    byteLimit:50 * 1024 * 1024 // 50 MB by default
+                     ageLimit:60 * 60 * 24 * 30]; // 30 days by default
+}
+
+- (instancetype)initWithName:(NSString *)name
+                    rootPath:(NSString *)rootPath
+                  serializer:(PINDiskCacheSerializerBlock)serializer
+                deserializer:(PINDiskCacheDeserializerBlock)deserializer
+                  keyEncoder:(PINDiskCacheKeyEncoderBlock)keyEncoder
+                  keyDecoder:(PINDiskCacheKeyDecoderBlock)keyDecoder
+                    ttlCache:(BOOL)ttlCache
+                   byteLimit:(NSUInteger)byteLimit
+                    ageLimit:(NSTimeInterval)ageLimit
+{
     if (!name)
         return nil;
     
@@ -76,7 +91,9 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
                                              keyEncoder:keyEncoder
                                              keyDecoder:keyDecoder
                                          operationQueue:_operationQueue
-                                               ttlCache:ttlCache];
+                                               ttlCache:ttlCache
+                                              byteLimit:byteLimit
+                                               ageLimit:ageLimit];
         _memoryCache = [[PINMemoryCache alloc] initWithName:_name operationQueue:_operationQueue ttlCache:ttlCache];
     }
     return self;
